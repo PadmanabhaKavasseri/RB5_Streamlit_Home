@@ -11,6 +11,24 @@ import os
 
 image = Image.open('Qualcomm-Logo-500x313.png')
 
+def parse_llm(resp):
+    action = None
+
+    if "water" in resp:
+        action = "water"
+    elif "apple" in resp:
+        action = "apple"
+    elif "cup" in resp:
+        action = "cup"
+    else:
+        return
+    
+    # publish on /llm
+    # example publish command : 
+    # ros2 topic pub -1 /llm example_interfaces/msg/String "{data: 'Hello from terminal'}"
+    command = "ros2 topic pub -1 /robot_action std_msgs/msg/String " + '"{data: \'' + action + '\'}"'
+    print("command : ", command)
+    os.system(command)
 
 
 def query_llm(query):
@@ -19,17 +37,19 @@ def query_llm(query):
     response = requests.post(url)
     st.write(response.content)
 
-    result = str(response.content)
-    clean_string = result.strip("'")
-    clean_string = clean_string.replace('"', '')
-    clean_string = clean_string.replace('\'', '')
-    output_string = clean_string[clean_string.find(":") + 2:]
-    print(output_string)
+    print("Response.content: ", response.content)
+
+    result = response.content.decode("utf-8").strip("\"").lower()
+    print("result:", result)
+    parse_llm(result)
+    
+    # output_string = clean_string[clean_string.find(":") + 1:]
+    # print(output_string)
 
     # ros2 topic pub -1 /llm example_interfaces/msg/String "{data: 'Hello from terminal'}"
-    command = "ros2 topic pub -1 /llm std_msgs/msg/String " + '"{data: \'' + output_string + '\'}"'
-    print(command)
-    os.system(command)
+    # command = "ros2 topic pub -1 /llm std_msgs/msg/String " + '"{data: \'' + output_string + '\'}"'
+    # # print(command)
+    # os.system(command)
     #ros executable -> outside of this file ./ros publisher ("txt") 
 
 
@@ -39,21 +59,32 @@ st.title ('Qualcomm Demo')
 sb = st.sidebar
 
 sb.image(image)
+sb.subheader("Sample Prompts")
 
-button1 = sb.button("Apple")
-button2 = sb.button("Beer")
-button3 = sb.button("Cake")
+button1 = sb.button("Get me an Apple")
+button2 = sb.button("Get me a cup")
+button3 = sb.button("Get me water")
+button4 = sb.button("I am thirsty")
+button5 = sb.button("I want to make a smoothie")
+button6 = sb.button("Get me something to pour my tea")
+button7 = sb.button("Get me a fruit")
 
 
 if button1:
-    st.write(":apple:")
-    query_llm("Can i get an apple?")
+    query_llm("Get me an Apple")
 if button2:
-    st.write(":beer:")
-    query_llm("Can i get a drink?")
+    query_llm("Get me a cup")
 if button3:
-    st.write(":cake:")
-    query_llm("Can i get something to eat?")
+    query_llm("Get me water")
+if button4:
+    query_llm("I am thirsty")
+if button5:
+    query_llm("I want to make a smoothie")
+if button6:
+    query_llm("Get me something to pour my tea")
+if button7:
+    query_llm("Get me a fruit")
+
 
 
 llm_message = st.text_input("Enter a message for the LLM hosted on the AWS Cloud",key="placeholder")
