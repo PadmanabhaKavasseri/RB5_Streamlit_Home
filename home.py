@@ -5,6 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 import pdb
 import urllib.parse
+import os
 
 
 
@@ -17,6 +18,19 @@ def query_llm(query):
     url+=urllib.parse.quote(query)
     response = requests.post(url)
     st.write(response.content)
+
+    result = str(response.content)
+    clean_string = result.strip("'")
+    clean_string = clean_string.replace('"', '')
+    clean_string = clean_string.replace('\'', '')
+    output_string = clean_string[clean_string.find(":") + 2:]
+    print(output_string)
+
+    # ros2 topic pub -1 /llm example_interfaces/msg/String "{data: 'Hello from terminal'}"
+    command = "ros2 topic pub -1 /llm std_msgs/msg/String " + '"{data: \'' + output_string + '\'}"'
+    print(command)
+    os.system(command)
+    #ros executable -> outside of this file ./ros publisher ("txt") 
 
 
 
