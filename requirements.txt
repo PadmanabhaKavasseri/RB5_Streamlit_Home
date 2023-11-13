@@ -1,0 +1,9 @@
+pip install streamlit
+
+'streamlit hello' to see if it is working
+
+pip install Pillow
+pip install av
+pip install requests
+pip install pdb2py
+pip install urllib-3
