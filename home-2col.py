@@ -9,6 +9,8 @@ import os
 
 
 qc_logo = Image.open('Qualcomm-Logo-500x313.png')
+q_robotics = Image.open('qual_2.jpg')
+
 st.set_page_config(
     page_title="Ex-stream-ly Cool App",
     page_icon="random",
@@ -75,6 +77,7 @@ col1, col2 = st.columns([3, 1])
 
 sb = st.sidebar
 
+sb.image(q_robotics)
 sb.image(qc_logo)
 sb.subheader("Sample Prompts")
 sb.divider()
@@ -116,8 +119,10 @@ if llm_message:
     
     
 col2.subheader("About the RB5")
-rb5 = Image.open('qual_2.jpg')
-col2.image(rb5)
+
+col2.image(q_robotics)
+rb52 = Image.open('qyalbpt.png')
+col2.image(rb52)
 
 
 
