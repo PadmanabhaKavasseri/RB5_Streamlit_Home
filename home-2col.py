@@ -8,8 +8,9 @@ import os
 
 
 
-qc_logo = Image.open('Qualcomm-Logo-500x313.png')
+qc_logo = Image.open('Qualcomm-Logo.png')
 q_robotics = Image.open('qual_2.jpg')
+
 
 st.set_page_config(
     page_title="Ex-stream-ly Cool App",
@@ -23,7 +24,7 @@ st.set_page_config(
     }
 )
 
-
+# sends ros msg
 def parse_llm(resp):
     action = None
 
@@ -42,6 +43,7 @@ def parse_llm(resp):
     command = "ros2 topic pub -1 /robot_action std_msgs/msg/String " + '"{data: \'' + action + '\'}"'
     print("command : ", command)
     os.system(command)
+    return action
 
 
 def query_llm(query):
@@ -54,8 +56,8 @@ def query_llm(query):
 
     result = response.content.decode("utf-8").strip("\"").lower()
     print("result:", result)
-    col1.text(result)
-    parse_llm(result)
+    action = parse_llm(result)
+    st.session_state.llm_res = action
     
     # output_string = clean_string[clean_string.find(":") + 1:]
     # print(output_string)
@@ -69,26 +71,31 @@ def query_llm(query):
 
 
 st.title ('Robotics with LLMs')
+st.divider()
 
-col1, col2 = st.columns([3, 1])
+col1, col2 = st.columns([3, 1],gap="large")
 
-
-
+# col1.divider()
+# col2.divider()
+# col1.subheader("Examples")
+# col2.subheader("Sample Prompts")
 
 sb = st.sidebar
 
-sb.image(q_robotics)
+# sb.image(q_robotics)
 sb.image(qc_logo)
-sb.subheader("Sample Prompts")
-sb.divider()
+# sb.subheader("Compute at your fingertips")
+# sb.divider()
 
-button1 = sb.button("Get me an Apple")
-button2 = sb.button("Get me a cup")
-button3 = sb.button("Get me water")
-button4 = sb.button("I am thirsty")
-button5 = sb.button("I want to make a smoothie")
-button6 = sb.button("Get me something to pour my tea")
-button7 = sb.button("Get me a fruit")
+sb.image(q_robotics)
+
+button1 = col2.button("Get me an Apple")
+button2 = col2.button("Get me a cup")
+button3 = col2.button("Get me water")
+button4 = col2.button("I am thirsty")
+button5 = col2.button("I want to make a smoothie")
+button6 = col2.button("Get me something to pour my tea")
+button7 = col2.button("Get me a fruit")
 
 
 if button1:
@@ -108,21 +115,25 @@ if button7:
 
 
 
+def txtbox_cb():
+    query_llm(st.session_state.txtbox)
+    st.session_state.txtbox = ''
+    
 
-col1.subheader("Make the arm do work")
-llm_message = col1.text_input("Enter a message for the LLM hosted on the AWS Cloud",key="placeholder")
-
-col1.subheader("LLM's response: ")
-if llm_message:
-    # col1.write("You enetered: ", llm_message)
-    query_llm(llm_message)
+# col1.subheader("Make the arm do work")
+col1.text_input("Enter a message for the LLM hosted on the AWS Cloud", key="txtbox", on_change=txtbox_cb)
+col1.text_input("LLM Output",key="llm_res", disabled=True, label_visibility="visible")
     
     
-col2.subheader("About the RB5")
+    
 
-col2.image(q_robotics)
+
+# col2.image(q_robotics)
+
 rb52 = Image.open('qyalbpt.png')
 col2.image(rb52)
+
+
 
 
 
