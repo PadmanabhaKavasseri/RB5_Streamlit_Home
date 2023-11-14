@@ -9,6 +9,18 @@ import os
 
 
 qc_logo = Image.open('Qualcomm-Logo-500x313.png')
+st.set_page_config(
+    page_title="Ex-stream-ly Cool App",
+    page_icon="random",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://www.extremelycoolapp.com/help',
+        'Report a bug': "https://www.extremelycoolapp.com/bug",
+        'About': "# This is a header. This is an *extremely* cool app!"
+    }
+)
+
 
 def parse_llm(resp):
     action = None
@@ -34,12 +46,13 @@ def query_llm(query):
     url = 'https://m7zynasrjzhnocfpay2hfhbvwa0ttfpi.lambda-url.us-west-1.on.aws/?query='
     url+=urllib.parse.quote(query)
     response = requests.post(url)
-    st.write(response.content)
+    
 
     print("Response.content: ", response.content)
 
     result = response.content.decode("utf-8").strip("\"").lower()
     print("result:", result)
+    col1.text(result)
     parse_llm(result)
     
     # output_string = clean_string[clean_string.find(":") + 1:]
@@ -51,21 +64,11 @@ def query_llm(query):
     # os.system(command)
     #ros executable -> outside of this file ./ros publisher ("txt") 
 
-st.set_page_config(
-    page_title="Ex-stream-ly Cool App",
-    page_icon="random",
-    layout="centered",
-    initial_sidebar_state="expanded",
-    menu_items={
-        'Get Help': 'https://www.extremelycoolapp.com/help',
-        'Report a bug': "https://www.extremelycoolapp.com/bug",
-        'About': "# This is a header. This is an *extremely* cool app!"
-    }
-)
 
-st.title ('Qualcomm Demo')
-st.divider()
 
+st.title ('Robotics with LLMs')
+
+col1, col2 = st.columns([3, 1])
 
 
 
@@ -102,13 +105,19 @@ if button7:
 
 
 
-llm_message = st.text_input("Enter a message for the LLM hosted on the AWS Cloud",key="placeholder")
 
+col1.subheader("Make the arm do work")
+llm_message = col1.text_input("Enter a message for the LLM hosted on the AWS Cloud",key="placeholder")
+
+col1.subheader("LLM's response: ")
 if llm_message:
-    st.write("You enetered: ", llm_message)
+    # col1.write("You enetered: ", llm_message)
     query_llm(llm_message)
     
     
+col2.subheader("About the RB5")
+rb5 = Image.open('qual_2.jpg')
+col2.image(rb5)
 
 
 
